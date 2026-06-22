@@ -2,28 +2,21 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from gensim.downloader import load
 
-def rd(ems):
-    pca = PCA(n_components=2)
-    r = pca.fit_transform(ems)
-    return r
+print("loading glove model...")
+model=load("glove-wiki-gigaword-50")
 
-def visualize(words, ems):
-    plt.figure(figsize=(10, 6))
-    for i, word in enumerate(words):
-        x, y = ems[i]
-        plt.scatter(x, y, marker='o', color='blue')
-        plt.text(x + 0.02, y + 0.02, word, fontsize=12)
-    plt.show()
+words=['football','volleyball','soccer','tennis','circket']
+vectors=[model[word]for word in words]
 
-def gsm(word):
-    sw = model.most_similar(word, topn=5)
-    for word, s in sw:
-        print(word, s)
+pca=PCA(n_components=2)
+points=pca.fit_transform(vectors)
 
-print("Loading pre-trained GloVe model (50 dimensions)...")
-model = load("glove-wiki-gigaword-50")
-words = ['football', 'basketball', 'soccer', 'tennis', 'cricket']
-ems = [model[word] for word in words]
-e = rd(ems)
-visualize(words, e)
-gsm("programming")
+plt.figure(figsize=(15,10))
+for word,(x,y) in zip (words,points):
+    plt.scatter(x,y,color='blue')
+    plt.text(x+0.02,y+0.02,words,fontsize=12)
+plt.show()
+
+result=model.most_similar("programmming",topn=5)    
+for word,score in result:
+    print(word,score)
